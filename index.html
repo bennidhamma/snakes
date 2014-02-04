@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snakes</title>
+    <meta charset="utf-8" />
+
+    <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+
+    <style type="text/css" media="screen">
+      body {
+        font-family: VT323;
+        background: black;
+        color: green;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      canvas {
+        height: auto;;
+        border: 2px solid green;
+        margin: 0 auto;
+        display: block;
+        image-rendering: -webkit-optimize-contrast;
+      }
+    </style>
+</head>
+<body>
+    <header>
+      <h1>Snakes</h1>
+    </header>
+    <canvas id="board"></canvas>
+    <footer>
+        
+    </footer>
+    <script type="text/javascript" charset="utf-8">
+
+      var pixelWidth = 500;
+      var pixelHeight = 500;
+      var gameWidth = 100;
+      var gameHeight = 100;
+      var unitWidth = pixelWidth / gameWidth;
+      var unitHeight = pixelHeight / gameHeight;
+
+      var canvas = document.getElementById("board");
+      canvas.width = pixelWidth;
+      canvas.height = pixelHeight;
+
+      var ctx = canvas.getContext('2d');
+
+      function fillPoint(x, y) {
+        ctx.fillStyle = 'green';
+        ctx.fillRect (x * unitWidth, y * unitHeight, unitWidth, unitHeight);
+      }
+
+      function startGame() {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, 100, 100);
+
+        for (var i = 0; i < 10; i++) {
+          fillPoint(50 + i, 50);
+        }
+      }
+
+      startGame();
+    </script>
+</body>
+</html>
