@@ -42,10 +42,17 @@
       var gameHeight = 100;
       var unitWidth = pixelWidth / gameWidth;
       var unitHeight = pixelHeight / gameHeight;
+      var intervalId = 0;
+
+      var x = 50;
+      var y = 50;
+      var dx = -1;
+      var dy = 0;
 
       var canvas = document.getElementById("board");
       canvas.width = pixelWidth;
       canvas.height = pixelHeight;
+      document.addEventListener ('keydown', keyDown);
 
       var ctx = canvas.getContext('2d');
 
@@ -53,14 +60,47 @@
         ctx.fillStyle = 'green';
         ctx.fillRect (x * unitWidth, y * unitHeight, unitWidth, unitHeight);
       }
-
+      
       function startGame() {
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, 100, 100);
 
-        for (var i = 0; i < 10; i++) {
-          fillPoint(50 + i, 50);
+        intervalId = setInterval(update, 200);
+      }
+
+      function update() {
+        x += dx;
+        y += dy;
+        fillPoint (x, y);
+      }
+
+      function keyDown(event) {
+        var code = event.keyCode;
+        if (event.charCode && code == 0)
+          code = event.charCode;
+        switch(code) {
+          case 37:
+            // Key left.
+            dx = -1;
+            dy = 0;
+            break;
+          case 38:
+            // Key up.
+            dx = 0;
+            dy = -1;
+            break;
+          case 39:
+            // Key right.
+            dx = 1;
+            dy = 0;
+            break;
+          case 40:
+            // Key down.
+            dx = 0;
+            dy = 1;
+            break;
         }
+        event.preventDefault();
       }
 
       startGame();
