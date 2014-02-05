@@ -68,13 +68,26 @@
       var unitWidth = pixelWidth / gameWidth;
       var unitHeight = pixelHeight / gameHeight;
       var intervalId = 0;
-      var intervalLength = 200; // The initial heartbeat duration.
+      var intervalLength = 100; // The initial heartbeat duration.
       var score = 0;
 
-      var x = 50;
-      var y = 50;
+      var px = 50;
+      var py = 50;
       var dx = -1;
       var dy = 0;
+
+      // Create an array to track where we have visited. This is an array of arrays, which
+      // allows us to create a 2-dimensional grid to represent the board, and mark each point
+      // the snake has traveled to.
+      var visited = [];
+      for (var x = 0; x < gameWidth; x++)  {
+        // First, create an inner array for each column of the board.
+        visited[x] = [];
+        for (var y = 0; y < gameHeight; y++) {
+          // Put a zero into the coordinates at x,y to show the player hasn't been there yet.
+          visited[x][y] = 0;
+        }
+      }
 
       // Find the game-over screen and score elements and store them in variables.
       var gameOver = document.getElementById('game-over');
@@ -97,7 +110,7 @@
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, 100, 100);
 
-        // Tell the browser to execute the update function every 200ms.
+        // Tell the browser to execute the update function every intervalLength;
         intervalId = setInterval(update, 200);
 
         // Add an event listener to the document to listen for key presses.
@@ -111,12 +124,15 @@
        */
       function update() {
         // Add dx and dy to x and y to show the movement of the snake.
-        x += dx;
-        y += dy
+        px += dx;
+        py += dy
 
         if (isAlive()) {
           // Player is still alive. Paint the game point green to show their growth.
-          fillPoint (x, y, 'green');
+          fillPoint (px, py, 'green');
+
+          // Mark the point as visited.
+          visited[px][py] = 1;
 
           // Increment the score and update the display.
           score += 10;
@@ -124,7 +140,7 @@
 
         } else {
           // Oops! Player is dead. Fill in the last spot red to show a little effect.
-          fillPoint (x - dx, y - dy, 'red');
+          fillPoint (px - dx, py - dy, 'red');
 
           // End the game timer.
           clearInterval(intervalId);
@@ -139,19 +155,23 @@
        * has hit one of the edges, or if they have crossed over their own path.
        */
       function isAlive() {
-        if (x < 0) {
+        if (px < 0) {
           return false;
         }
 
-        if (x >= gameWidth) {
+        if (px >= gameWidth) {
           return false;
         }
 
-        if (y < 0) {
+        if (py < 0) {
           return false;
         }
 
-        if (y >= gameHeight) {
+        if (py >= gameHeight) {
+          return false;
+        }
+
+        if (visited[px][py] == 1) {
           return false;
         }
 
