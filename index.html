@@ -75,30 +75,45 @@
       }
 
       function keyDown(event) {
+        // We need to track the new directions in separate variables
+        // so that we can compare them to the old values and prevent
+        // backtracking.
+        var newDx = 0, newDy = 0;
+
         var code = event.keyCode;
         if (event.charCode && code == 0)
           code = event.charCode;
         switch(code) {
           case 37:
             // Key left.
-            dx = -1;
-            dy = 0;
+            newDx = -1;
+            newDy = 0;
             break;
           case 38:
             // Key up.
-            dx = 0;
-            dy = -1;
+            newDx = 0;
+            newDy = -1;
             break;
           case 39:
             // Key right.
-            dx = 1;
-            dy = 0;
+            newDx = 1;
+            newDy = 0;
             break;
           case 40:
             // Key down.
-            dx = 0;
-            dy = 1;
+            newDx = 0;
+            newDy = 1;
             break;
+          default:
+            // No arrow key pressed. Return and allow the event to continue.
+            return;
+        }
+
+        // Multiply new dx and new dy by -1 to compare them to current dx / dy.
+        // Only update if neither x nor y are in the same direction as before.
+        if (newDx * -1 != dx && newDy * -1 != dy) {
+          dx = newDx;
+          dy = newDy;
         }
         event.preventDefault();
       }
