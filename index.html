@@ -69,6 +69,7 @@
       var unitHeight = pixelHeight / gameHeight;
       var intervalId = 0;
       var intervalLength = 100; // The initial heartbeat duration.
+      var nextLevel = 100; // The score at which the next level will occur.
       var score = 0;
 
       var px = 50;
@@ -111,7 +112,7 @@
         ctx.fillRect(0, 0, 100, 100);
 
         // Tell the browser to execute the update function every intervalLength;
-        intervalId = setInterval(update, 200);
+        intervalId = setInterval(update, intervalLength);
 
         // Add an event listener to the document to listen for key presses.
         document.addEventListener ('keydown', keyDown);
@@ -134,9 +135,24 @@
           // Mark the point as visited.
           visited[px][py] = 1;
 
-          // Increment the score and update the display.
+          // Increment the score by 10 and update the display.
           score += 10;
           scoreElement.textContent = 'Score: ' + score;
+
+          // Every 200 points, decrease the interval by 5ms
+          if (score > nextLevel) {
+            // Clear the old update timer.
+            clearInterval(intervalId);
+
+            // Decrease the interval length. This is fudgy.
+            intervalLength -= 5;
+
+            // Increase the nextLevel amount. This is fudgy.
+            nextLevel = nextLevel * 1.4;
+
+            // Restart the update timer with the new duration.
+            intervalId = setInterval(update, intervalLength);
+          }
 
         } else {
           // Oops! Player is dead. Fill in the last spot red to show a little effect.
