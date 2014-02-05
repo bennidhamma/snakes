@@ -13,8 +13,18 @@
         color: green;
       }
 
+      #score {
+        width: 500px;
+        margin: 0 auto;
+        text-align: right;
+        font-size: 150%;
+        margin-bottom: 10px;
+      }
+
       h1 {
         text-align: center;
+        margin: 20px 0 0 0;
+        padding: 0;
       }
 
       canvas {
@@ -43,6 +53,7 @@
     <header>
       <h1>Snakes</h1>
     </header>
+    <div id="score">Score: 0</div>
     <canvas id="board"></canvas>
     <div id="game-over">Game Over</div>
     <footer>
@@ -57,14 +68,17 @@
       var unitWidth = pixelWidth / gameWidth;
       var unitHeight = pixelHeight / gameHeight;
       var intervalId = 0;
+      var intervalLength = 200; // The initial heartbeat duration.
+      var score = 0;
 
       var x = 50;
       var y = 50;
       var dx = -1;
       var dy = 0;
 
-      // Find the game-over screen and store it in a variable.
+      // Find the game-over screen and score elements and store them in variables.
       var gameOver = document.getElementById('game-over');
+      var scoreElement = document.getElementById('score');
 
       // Find the canvas HTML element and store it in a variable.
       var canvas = document.getElementById('board');
@@ -73,30 +87,41 @@
       canvas.width = pixelWidth;
       canvas.height = pixelHeight;
 
-      // Add an event listener to the document to listen for key presses.
-      document.addEventListener ('keydown', keyDown);
-
       // Get a drawing context from the canvas. This is needed for drawing routines.
       var ctx = canvas.getContext('2d');
 
-      function fillPoint(x, y, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect (x * unitWidth, y * unitHeight, unitWidth, unitHeight);
-      }
-      
+      /*
+       * This function clears the canvas to black, and sets up the hearteat timer.
+       */
       function startGame() {
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, 100, 100);
 
+        // Tell the browser to execute the update function every 200ms.
         intervalId = setInterval(update, 200);
+
+        // Add an event listener to the document to listen for key presses.
+        document.addEventListener ('keydown', keyDown);
       }
 
+      /* 
+       * The update function is called each 'heartbeat' of the game. 
+       * It is responsible for growing the snake, and checking to see
+       * if the player is still alive.
+       */
       function update() {
+        // Add dx and dy to x and y to show the movement of the snake.
         x += dx;
         y += dy
 
         if (isAlive()) {
+          // Player is still alive. Paint the game point green to show their growth.
           fillPoint (x, y, 'green');
+
+          // Increment the score and update the display.
+          score += 10;
+          scoreElement.textContent = 'Score: ' + score;
+
         } else {
           // Oops! Player is dead. Fill in the last spot red to show a little effect.
           fillPoint (x - dx, y - dy, 'red');
@@ -107,15 +132,18 @@
           // Show the game over screen.
           gameOver.style.display = 'block';
         }
-
       }
 
-      function isAlive () {
+      /*
+       * This function checks various conditions for life, such as if the player
+       * has hit one of the edges, or if they have crossed over their own path.
+       */
+      function isAlive() {
         if (x < 0) {
           return false;
         }
 
-        if (x > gameWidth) {
+        if (x >= gameWidth) {
           return false;
         }
 
@@ -123,13 +151,16 @@
           return false;
         }
 
-        if (y > gameHeight) {
+        if (y >= gameHeight) {
           return false;
         }
 
         return true;
       }
 
+      /*
+       * This function listens to the keyboard presses and updates the player's direction.
+       */
       function keyDown(event) {
         // We need to track the new directions in separate variables
         // so that we can compare them to the old values and prevent
@@ -173,6 +204,16 @@
         }
         event.preventDefault();
       }
+
+      /*
+       * Fill a block of pixels on the canvas that correspond to a unit square 
+       * in the game grid.
+       */
+      function fillPoint(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect (x * unitWidth, y * unitHeight, unitWidth, unitHeight);
+      }
+      
 
       startGame();
     </script>
