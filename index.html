@@ -19,10 +19,23 @@
 
       canvas {
         height: auto;;
-        border: 2px solid green;
+        border: 4px solid green;
         margin: 0 auto;
         display: block;
         image-rendering: -webkit-optimize-contrast;
+      }
+
+      #game-over {
+        text-align: center;
+        line-height: 50px;
+        border: 2px dashed green;
+        background: black;
+        position: absolute;
+        width: 200px;
+        height: 50px;
+        left: calc(50% - 100px);
+        top: calc(40% - 25px);
+        display: none; // Hide the game over splash screen until the game is over.
       }
     </style>
 </head>
@@ -31,6 +44,7 @@
       <h1>Snakes</h1>
     </header>
     <canvas id="board"></canvas>
+    <div id="game-over">Game Over</div>
     <footer>
         
     </footer>
@@ -49,15 +63,24 @@
       var dx = -1;
       var dy = 0;
 
-      var canvas = document.getElementById("board");
+      // Find the game-over screen and store it in a variable.
+      var gameOver = document.getElementById('game-over');
+
+      // Find the canvas HTML element and store it in a variable.
+      var canvas = document.getElementById('board');
+
+      // Set the width and height of the canvas.
       canvas.width = pixelWidth;
       canvas.height = pixelHeight;
+
+      // Add an event listener to the document to listen for key presses.
       document.addEventListener ('keydown', keyDown);
 
+      // Get a drawing context from the canvas. This is needed for drawing routines.
       var ctx = canvas.getContext('2d');
 
-      function fillPoint(x, y) {
-        ctx.fillStyle = 'green';
+      function fillPoint(x, y, color) {
+        ctx.fillStyle = color;
         ctx.fillRect (x * unitWidth, y * unitHeight, unitWidth, unitHeight);
       }
       
@@ -70,8 +93,41 @@
 
       function update() {
         x += dx;
-        y += dy;
-        fillPoint (x, y);
+        y += dy
+
+        if (isAlive()) {
+          fillPoint (x, y, 'green');
+        } else {
+          // Oops! Player is dead. Fill in the last spot red to show a little effect.
+          fillPoint (x - dx, y - dy, 'red');
+
+          // End the game timer.
+          clearInterval(intervalId);
+
+          // Show the game over screen.
+          gameOver.style.display = 'block';
+        }
+
+      }
+
+      function isAlive () {
+        if (x < 0) {
+          return false;
+        }
+
+        if (x > gameWidth) {
+          return false;
+        }
+
+        if (y < 0) {
+          return false;
+        }
+
+        if (y > gameHeight) {
+          return false;
+        }
+
+        return true;
       }
 
       function keyDown(event) {
